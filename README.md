@@ -1,6 +1,6 @@
 This python code provides the algorithm and some of the code to accomplish the artificial
-life modelling suggested in Andrew Digh's paper in the Digh-Greek-Literacy.pdf. The file
-digh_vocal.py uses the algoritm described in marnfix.pdf to simulate artificial humans
+life modelling suggested in Andrew Digh's paper in the file Digh-Greek-Literacy.pdf. The file
+digh_vocal.py uses the algorithm described in marnfix.pdf to simulate artificial humans
 speaking Greek. The simulations do not include written Greek as Digh had hoped for. I am 
 looking for collaborators who might extend the results presented to include written Greek,
 or also might have other uses for the code. The file simpleDigh.py is a simplified rendition
@@ -14,6 +14,6 @@ This is part of the study of writing at a group level. Also missing is much work
 of writing within the individual. I have coded some of the models given in Eliasmith's 1991
 "Neural Engineering" as a starting point in this regard.
    I am new to Category Theory. Would somebody please let me know if the induced function
-in ACT-artificial-life.pdf is correctly condstructed as a product? Maybe a co-product would have
-been correct. Anyway, the document does have graphics of the data produced by digh_vocal.py.
+in ACT-artificial-life.pdf is correctly constructed as a product? Maybe a co-product would have
+been correct. Anyway, the document does have graphs of the data produced by digh_vocal.py.
 
