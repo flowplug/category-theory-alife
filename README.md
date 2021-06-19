@@ -29,8 +29,9 @@ with artificial life modeling, which this beginning code is intended to initiate
 This is part of the study of writing at a group level. Also missing is much work on characterisitcs
 of writing within the individual. I have coded some of the models given in Eliasmith's 1991
 "Neural Engineering" as a starting point in this regard.
-   I am new to Category Theory. Would somebody please let me know if the induced function
-in ACT-artificial-life.pdf is correctly constructed as a product? Maybe a co-product would have
-been correct. Anyway, the document does have graphs of the data produced by digh_vocal.py.
+   The results given in the graph are summed over multiple seeds, in this case 5 seeds for each
+probability.
+   I use kst2 for graphs, there is now a Windows version. Kst2 data wizard doesn't work unless
+a parameter is passed to kst2: $ kst2 file_with_data.csv f= 360.
    There appear to be significant errors in Digh's computed results, details upon request.
 
