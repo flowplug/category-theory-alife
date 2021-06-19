@@ -39,6 +39,8 @@ full_log_file = 'full_log.txt'
 full_log = False # If true, output The current state for each
 # simorg to full_log_file. If this is true, over 200,000 lines
 # are often recorded in this file.
+log_tables = True # Print out connection table and transition table.
+logarunfile = 'tables.txt' # File where tables will be printed.
 tally_by_prob= True # Write all cycle lengths and transient lengths to a file
 # for each probability
 tally_by_prob_file = 'tally_by_prob.txt'
@@ -96,14 +98,27 @@ stepConnectProb =.05
 
 class admin(object):
 	def setit(self):
+		#If a list of cardinalities is given, each will run separately with
+		#some code improvement.
 		self.card=[cardinality]
 		self.rows=[ power(cardinality,2)]
 
+	def data_format_text(self,fout):
+		fout.write('\n\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n')
+		fout.write('\nData Format Key\nOrganisms: Number of organisms in trial\nProbability: Interconnect probability between organisms\n')
+		fout.write('[seed_number, seed, transient_length, cycle_length]\n')
+		fout.write('[seed_number, seed, transient_length, cycle_length]\n')
+		fout.write('[seed_number, seed, transient_length, cycle_length]\n')
+		fout.write('[seed_number, seed, transient_length, cycle_length]\n')
+		fout.write('\nMean cycle length: xx\nMean transient length: yy\n')
+		fout.write('\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n')
+
 	def tally_by_probf(self,bb):#, seedno, seed):
 		fout = open(tally_by_prob_file, 'a')
-		fout.write('Transient Lengths and Cycle lengths by Probability and seed\n')
-		for smorg in bb.organ_dit.keys():
-			for pkee in bb.organ_dit[smorg].keys():
+		fout.write('Transient Lengths and Cycle lengths by Probability and Seed\n')
+		self.data_format_text(fout)
+		for smorg in sorted(list( bb.organ_dit.keys())):
+			for pkee in sorted(list(bb.organ_dit[smorg].keys())):
 					fout.write('\n*********************************************\n')
 					for yyz in bb.organ_dit[smorg][pkee]:
 							fout.write('\nOrganisms: ' + str(smorg))
@@ -118,8 +133,6 @@ class admin(object):
 							mnt =  mean(tls)
 							bb.cycle_sum[smorg][pkee]=mnc
 							bb.tls_sum[smorg][pkee] = mnt
-							fout.write('\nFor Organisms: ' + str(smorg)+'\n')
-							fout.write('For Probability: ' + str(pkee) + '\n')
 							fout.write('Mean cycle length: ' + str(mnc) + '\n')
 							fout.write('Mean transient length: ' + str(mnt) + '\n')
 					fout.write('___________________________\n')
@@ -138,12 +151,13 @@ class admin(object):
 			fout.write('smorg+prob,cycls\n')
 			foutb.write('organisms+probability,transient\n')
 			foutb.write('smorg+prob,before\n')
-			for smig in bb.cycle_sum.keys():
-				for pr in bb.cycle_sum[smig].keys():
+			for smig in sorted(list(bb.cycle_sum.keys())):
+				for pr in sorted(list(bb.cycle_sum[smig].keys())):
 					fout.write( str(smig+(stepPop*pr))+','+ str(bb.cycle_sum[smig][pr]) +'\n')
 					foutb.write(  str(smig+(stepPop*pr))+','+str(bb.tls_sum[smig][pr]) + '\n')
 
 	def record_cycle_info (self, bb, cProb, cy, tl, exceeded, seedno, seed, num_orgs):
+		if tl == 0: cy =0
 		if not exceeded:
 			bb.probtls[num_orgs][cProb]+=[[seedno,seed,tl,cy]]
 		else:
@@ -200,21 +214,36 @@ class admin(object):
 			ouLi+=[int(bin(x), base=2)]
 		return ouLi
 
-	def outMats(self, cm, trand,bitl):
-		fout = open(full_log_file, 'a')
+	def outMats(self, cm, trand,bitl,prob, orgtally):
 		ouList=self.toBin(bitl)
 		inList=self.toBin(bitl)
-		fout.write('\nTransition Table:')
-		for ou in ouList:
-			for oi in inList:
-				fout.write ( '\n'+str((ou,oi))+' '+str(trand[(ou,oi)]))
-		fout.close()
-		fout = open(logarun_file, 'a')
-		fout.write('\nTransition Table:')
-		for ou in ouList:
-			for oi in inList:
-				fout.write('\n' + str((ou, oi)) + ' ' + str(trand[(ou, oi)]))
-		fout.close()
+		if full_log:
+			fout = open(full_log_file, 'a')
+			fout.write('\nTransition Table:')
+			for ou in ouList:
+				for oi in inList:
+					fout.write ( '\n'+str((ou,oi))+' '+str(trand[(ou,oi)]))
+			fout.write('\nConnection Table:')
+			for ou in range(cm.shape[0]):
+				fout.write('\n')
+				for oi in range (cm.shape[1]):
+					fout.write ( +str(cm[ou][oi]))
+			fout.close()
+		if log_tables:
+			fout = open(logarunfile, 'a')
+			fout.write('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+			fout.write('\nNumber of organisms: '+str(orgtally)+'\n')
+			fout.write('Probability of interconnection: '+str(prob)+'\n')
+			fout.write('\nTransition Table:')
+			for ou in ouList:
+				for oi in inList:
+					fout.write('\n' + str((ou, oi)) + ' ' + str(trand[(ou, oi)]))
+			fout.write('\nConnection Table:')
+			for ou in range(cm.shape[0]):
+				fout.write('\n')
+				for oi in range (cm.shape[1]):
+					fout.write ( str(cm[ou][oi]) + ' ')
+			fout.close()
 
 	def createXmat(self,orr):
 		return  zeros ((orr,orr),  int8)
@@ -251,23 +280,15 @@ class proby(object):
 
 	def getSeeds(self):
 		self.seeds=arange (startSeeds,startSeeds+totalSeeds+1)
-
-		self.probcycs={}
 		self.probtls={}
 		for xk in self.organ_dit.keys():
 			self.probtls [xk]= {}
 			for p in self.probray:
-						self.probcycs[p] = [] 
-						# A dictionary of lists that will contain
-						# all cycle lengths associated with each probability.
-						# if the iterations exceed the maximum iterations,
-						# the cycle length is recorded as zero.
-						
 						self.probtls[xk][p] = []
 						# A dictionary of lists that will contain transient lengths
-						# for each probability. If the maximum iterations is
+						# and cycles for each probability. If the maximum iterations is
 						# exceeded, the transient length is recorded as the maximum
-						# iterations.
+						# iterations and cycle length is filled with zero.
 
 	def anint(self,prob):
 		if random.ranf() <= prob:
@@ -308,7 +329,7 @@ class proby(object):
 			for ou in range(bitl):
 				for oi in range(bitl):
 					rw+=1
-					if toZips[rw] == 0 or (ou==0 and oi ==0):
+					if toZips[rw] == 0: # or (ou==0 and oi ==0):
 						lis[rw][0] = int('0', base=2)
 						lis[rw][1] = int('0', base=2)
 					else:
@@ -406,12 +427,16 @@ def main():
 					bb.genInter(connectionmat,orr,pr)
 					ad.spanList(connectionmat)			
 					cc.doSim(max_iterations,oggs,bb.tranT, ad,bb.seeds[s],s,pr,bb)
-					if full_log:ad.outMats(connectionmat, bb.tranT, ad.card[ut])
+					count_organisms = max(list(oggs.keys())) # orgnanisms are keyed by their integer enumeration
+					# from one to the maximum in the global variable orgs. If gradualPop is True, count_organisms
+					# will be less than orgs - it will step up to orgs by the global stepPop.
+					if full_log or log_tables:ad.outMats(connectionmat, bb.tranT, ad.card[ut],pr,count_organisms)
 
 	if tally_by_prob: ad.tally_by_probf(bb)
 				#if tally_by_prob:ad.tally_by_probf(bb)
 
 if full_log: open(full_log_file, 'w') # Empty the full log file if it exists, else create it.
+if log_tables: open(logarunfile, 'w')
 if tally_by_prob: open(tally_by_prob_file, 'w') # Empty the cycle_log_file if it exists, else create it.
 if write_summary: open(write_summary_file, 'w')
 if write_csvs:
