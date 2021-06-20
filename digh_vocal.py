@@ -66,7 +66,7 @@ if not gradualPop: startPop = orgs
 
 # The transition table is in a dictionary located at proby.tranT
 # The dictionary keys are tuples comprising the pairwise combinations
-# of the cartesian product of the set {1,2...cardinality}
+# of the cartesian product of the set {1,2...cardinality**2}
 # with itself. The set elements are in binary strings.
 # Each transition table key corresponds to an entry that is also
 # a tuple.
