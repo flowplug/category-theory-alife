@@ -1,5 +1,3 @@
-![cycles](https://user-images.githubusercontent.com/24655619/122244785-261ed000-ce93-11eb-9d33-7ec9e77d8174.png)
-![transient](https://user-images.githubusercontent.com/24655619/122244809-2c14b100-ce93-11eb-84b7-81cc86f0b7ec.png)
 
 This python code provides the algorithm and some of the code to accomplish the artificial
 life modelling suggested in Andrew Digh's paper in the file Digh-Greek-Literacy.pdf. The file
@@ -35,3 +33,5 @@ probability.
 a parameter is passed to kst2: $ kst2 file_with_data.csv f= 360.
    There appear to be significant errors in Digh's computed results, details upon request.
 
+![cycles](https://user-images.githubusercontent.com/24655619/122244785-261ed000-ce93-11eb-9d33-7ec9e77d8174.png)
+![transient](https://user-images.githubusercontent.com/24655619/122244809-2c14b100-ce93-11eb-84b7-81cc86f0b7ec.png)
